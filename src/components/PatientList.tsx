@@ -1,46 +1,52 @@
 "use client";
 
-import { useState } from "react";
-import { usePatients } from "@/hooks/usePatients";
+import {useState} from "react";
+import {usePatients} from "@/hooks/usePatients";
 import PatientCard from "@/components/PatientCard";
 import AddPatientForm from "@/components/AddPatientForm";
-import { ActionButton } from "@/components/ui/Buttons";
-import { SearchInput } from "@/components/ui/SearchInput";
+import {ActionButton} from "@/components/ui/Buttons";
+import {SearchInput} from "@/components/ui/SearchInput";
 import LoadingWrapper from "@/components/ui/LoadingWrapper";
 import Snackbar from "@/components/ui/Snackbar";
-import {SnackbarMessage} from "@/types";
+import {Patient, PatientForm, SnackbarMessage} from "@/types";
 
 export default function PatientList() {
-    const { patients, setPatients, loading } = usePatients();
+    const {patients, setPatients, loading} = usePatients();
     const [filter, setFilter] = useState("");
     const [isAdding, setIsAdding] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState<SnackbarMessage | null>(null);
 
-    const handleUpdatePatient = (id, updatedPatient) => {
+    const handleUpdatePatient = (id: string, updatedPatient: Patient) => {
         try {
             setPatients((prev) =>
                 prev.map((patient) =>
-                    patient.id === id ? { ...patient, ...updatedPatient } : patient
+                    patient.id === id ? {...patient, ...updatedPatient} : patient
                 )
             );
-            setSnackbarMessage({ message: "Patient edited successfully.", type: "success" });
+            setSnackbarMessage({message: "Patient edited successfully.", type: "success"});
         } catch (error) {
-            setSnackbarMessage({ message: "Error updating patient.", type: "error" });
+            setSnackbarMessage({message: "Error updating patient.", type: "error"});
         }
     };
 
-    const handleAddPatient = (newPatient) => {
+    const handleAddPatient = (newPatient: PatientForm) => {
         try {
-            setPatients((prev) => [newPatient, ...prev]);
-            setSnackbarMessage({ message: "Patient added successfully.", type: "success" });
+            const patientWithId: Patient = {
+                ...newPatient,
+                id: Date.now().toString(),
+                createdAt: new Date().toISOString(),
+            };
+
+            setPatients((prev) => [patientWithId, ...prev]);
+            setSnackbarMessage({message: "Patient added successfully.", type: "success"});
             setIsAdding(false);
         } catch (error) {
-            setSnackbarMessage({ message: "Error adding patient.", type: "error" });
+            setSnackbarMessage({message: "Error adding patient.", type: "error"});
         }
     };
 
-    const handleError = (message) => {
-        setSnackbarMessage({ message, type: "error" });
+    const handleError = (message: string) => {
+        setSnackbarMessage({message, type: "error"});
     };
 
     const filteredPatients = patients.filter((patient) =>
@@ -60,22 +66,23 @@ export default function PatientList() {
                     />
                 </div>
                 <div className="mb-6 flex justify-center">
-                    <SearchInput value={filter} onChange={(e) => setFilter(e.target.value)} />
+                    <SearchInput value={filter}
+                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFilter(e.target.value)}/>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5 p-6 mx-10">
                     {filteredPatients.map((patient) => (
                         <PatientCard
                             key={patient.id}
                             patient={patient}
-                            onUpdate={handleUpdatePatient}
+                            onUpdateAction={handleUpdatePatient}
                         />
                     ))}
                 </div>
                 {isAdding && (
                     <AddPatientForm
-                        onAdd={handleAddPatient}
-                        onCancel={() => setIsAdding(false)}
-                        onError={handleError}
+                        onAddAction={handleAddPatient}
+                        onCancelAction={() => setIsAdding(false)}
+                        onErrorAction={handleError}
                     />
                 )}
                 {snackbarMessage && (
@@ -83,7 +90,7 @@ export default function PatientList() {
                         message={snackbarMessage.message}
                         type={snackbarMessage.type}
                         duration={3000}
-                        onClose={() => setSnackbarMessage(null)}
+                        onCloseAction={() => setSnackbarMessage(null)}
                     />
                 )}
             </div>

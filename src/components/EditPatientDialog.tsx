@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect} from "react";
 import {CancelButton, SaveButton} from "@/components/ui/Buttons";
+import {EditPatientDialogProps, Patient} from "@/types";
 
-export default function EditPatientDialog({ patient, onClose, onSave }) {
+export default function EditPatientDialog({patient, onCloseAction, onSaveAction}: EditPatientDialogProps) {
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
@@ -18,35 +19,32 @@ export default function EditPatientDialog({ patient, onClose, onSave }) {
         website: patient.website || "",
     });
 
-    const handleChange = (e) => {
-        setForm({ ...form, [e.target.name]: e.target.value });
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setForm({...form, [e.target.name]: e.target.value});
     };
 
     const handleSubmit = () => {
-        if (!form.name.trim()) {
-            alert("Name is required.");
-            return;
-        }
-        onSave(form);
+        const newPatient: Patient = {
+            ...form,
+            id: Date.now().toString(),
+            createdAt: new Date().toISOString(),
+        };
+        onSaveAction(newPatient);
         setIsVisible(false);
-        setTimeout(onClose, 300);
+        setTimeout(onCloseAction, 300);
     };
 
     const handleCancel = () => {
         setIsVisible(false);
-        setTimeout(onClose, 300);
+        setTimeout(onCloseAction, 300);
     };
 
     return (
         <div
-            className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-opacity duration-300 ${
-                isVisible ? "opacity-100" : "opacity-0"
-            }`}
+            className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-opacity duration-300 ${isVisible ? "opacity-100" : "opacity-0"}`}
         >
             <div
-                className={`bg-white p-8 rounded-lg shadow-2xl transition-transform duration-300 ${
-                    isVisible ? "scale-100" : "scale-90"
-                }`}
+                className={`bg-white p-8 rounded-lg shadow-2xl transition-transform duration-300 ${isVisible ? "scale-100" : "scale-90"}`}
                 style={{
                     width: "90%",
                     maxWidth: "800px",

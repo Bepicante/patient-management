@@ -1,19 +1,20 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import {SnackbarProps} from "@/types";
+import React, {useEffect, useState} from "react";
 
-export default function Snackbar({ message, onClose, duration, type }) {
+export default function Snackbar({message, onCloseAction, duration, type,}: SnackbarProps) {
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
         setIsVisible(true);
         const timer = setTimeout(() => {
             setIsVisible(false);
-            setTimeout(onClose, 300);
+            setTimeout(onCloseAction, 300);
         }, duration);
 
         return () => clearTimeout(timer);
-    }, [onClose, duration]);
+    }, [onCloseAction, duration]);
 
     const backgroundColor = type === "success" ? "bg-green-500" : "bg-red-500";
 

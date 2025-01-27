@@ -1,57 +1,55 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { FormErrors, PatientForm } from "@/types";
+import { AddPatientFormProps, FormErrors, PatientForm } from "@/types";
 import { CancelButton, SaveButton } from "@/components/ui/Buttons";
 import FormInput from "@/components/ui/FormInput";
 import { formFields } from "@/app/utils/constants";
+import { usePatientValidation } from "@/hooks/usePatientValidation";
 
-export default function AddPatientForm({ onAdd, onCancel, onError }) {
+export default function AddPatientForm({ onAddAction, onCancelAction, onErrorAction }: AddPatientFormProps) {
     const [form, setForm] = useState<PatientForm>({
         avatar: "",
         description: "",
         name: "",
         website: "",
     });
+
     const [errors, setErrors] = useState<FormErrors>({});
     const [isVisible, setIsVisible] = useState(false);
+    const { validatePatient } = usePatientValidation();
 
     useEffect(() => {
         setIsVisible(true);
         return () => setIsVisible(false);
     }, []);
 
-    const validateForm = () => {
-        const newErrors: FormErrors = {};
-
-        if (!form.name.trim() || /\d/.test(form.name))
-            newErrors.name = "Name is required and cannot contain numbers.";
-        if (!form.avatar.trim()) newErrors.avatar = "Avatar URL is required.";
-        if (!form.description.trim()) newErrors.description = "Description is required.";
-        if (!form.website.trim() || !/^https?:\/\/[\w.-]+$/.test(form.website))
-            newErrors.website = "A valid website URL is required.";
-        return newErrors;
-    };
-
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
     const handleSubmit = () => {
-        const validationErrors = validateForm();
+        const validationErrors = validatePatient(form);
         if (Object.keys(validationErrors).length > 0) {
             setErrors(validationErrors);
-            onError("Please fix the highlighted errors before proceeding.");
+            onErrorAction("Please fix the highlighted errors before proceeding.");
             return;
         }
-        onAdd({ ...form, id: Date.now().toString() });
+
+        const newPatient = {
+            ...form,
+            id: Date.now().toString(),
+            createdAt: new Date().toISOString(),
+        };
+
+        onAddAction(newPatient);
         closeDialog();
     };
 
     const closeDialog = () => {
         setIsVisible(false);
         setTimeout(() => {
-            onCancel();
+            onCancelAction();
         }, 300);
     };
 
@@ -74,9 +72,9 @@ export default function AddPatientForm({ onAdd, onCancel, onError }) {
                         key={field.name}
                         label={field.label}
                         name={field.name}
-                        value={form[field.name]}
-                        onChange={handleChange}
-                        error={errors[field.name]}
+                        value={form[field.name as keyof PatientForm]}
+                        onChangeAction={handleChange}
+                        error={errors[field.name as keyof PatientForm]}
                         type={field.type}
                     />
                 ))}

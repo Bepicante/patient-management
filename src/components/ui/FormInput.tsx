@@ -2,9 +2,11 @@
 
 import React from "react";
 import {formInputs} from "@/app/utils/constants";
+import {FormInputProps} from "@/types";
 
-export default function FormInput({label, name, value, onChange, error, type}) {
-    const baseClasses = `border p-2 rounded-lg w-full`;
+const baseClasses = `border p-2 rounded-lg w-full`;
+
+export default function FormInput({label, name, value, onChangeAction, error, type}: FormInputProps) {
     const errorClasses = error ? "border-red-500" : "border-gray-300";
 
     return (
@@ -14,7 +16,7 @@ export default function FormInput({label, name, value, onChange, error, type}) {
                 <textarea
                     name={name}
                     value={value}
-                    onChange={onChange}
+                    onChange={onChangeAction}
                     className={`${baseClasses} ${errorClasses}`}
                 ></textarea>
             )}
@@ -22,7 +24,7 @@ export default function FormInput({label, name, value, onChange, error, type}) {
                 <input
                     type="file"
                     name={name}
-                    onChange={onChange}
+                    onChange={onChangeAction}
                     className={`${baseClasses} ${errorClasses}`}
                 />
             )}
@@ -31,7 +33,7 @@ export default function FormInput({label, name, value, onChange, error, type}) {
                     type={type}
                     name={name}
                     value={value}
-                    onChange={onChange}
+                    onChange={onChangeAction}
                     className={`${baseClasses} ${errorClasses}`}
                 />
             )}

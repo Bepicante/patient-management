@@ -1,3 +1,5 @@
+import { PatientForm } from "@/types";
+
 export const formInputs = {
     Text: "text",
     TextArea: "textarea",
@@ -8,9 +10,9 @@ export const formInputs = {
     URL: "url",
 };
 
-export const formFields = [
-    { label: "Name", name: "name", type: formInputs.Text },
-    { label: "Avatar URL", name: "avatar", type: formInputs.Text },
-    { label: "Description", name: "description", type: formInputs.TextArea, rows: 4 },
-    { label: "Website", name: "website", type: formInputs.URL },
+export const formFields: { name: keyof PatientForm; label: string; type: "text" | "file" | "textarea" }[] = [
+    { name: "name", label: "Name", type: "text" },
+    { name: "avatar", label: "Avatar URL", type: "text" },
+    { name: "description", label: "Description", type: "textarea" },
+    { name: "website", label: "Website", type: "text" },
 ];

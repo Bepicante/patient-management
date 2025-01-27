@@ -21,5 +21,5 @@ export const usePatients = () => {
         fetchPatients();
     }, []);
 
-    return { patients, loading, setPatients };
+    return {patients, loading, setPatients};
 };

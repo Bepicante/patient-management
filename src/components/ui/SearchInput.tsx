@@ -1,4 +1,7 @@
-export function SearchInput({ value, onChange }) {
+import {SearchInputProps} from "@/types";
+import React from "react";
+
+export function SearchInput({value, onChange}: SearchInputProps) {
     return (
         <input
             type="text"

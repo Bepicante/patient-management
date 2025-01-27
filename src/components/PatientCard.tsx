@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, {useState} from "react";
 import EditPatientDialog from "./EditPatientDialog";
+import {Patient, PatientCardProps} from "@/types";
 
-export default function PatientCard({ patient, onUpdate }) {
+export default function PatientCard({patient, onUpdateAction}: PatientCardProps) {
     const [isExpanded, setIsExpanded] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
 
@@ -11,15 +12,29 @@ export default function PatientCard({ patient, onUpdate }) {
         setIsExpanded(!isExpanded);
     };
 
-    const handleSave = (updatedPatient) => {
-        onUpdate(patient.id, updatedPatient);
+    const handleSave = (updatedPatient: Patient) => {
+        onUpdateAction(patient.id, updatedPatient);
         setIsEditing(false);
+    };
+
+    const renderImage = (avatar: string | undefined) => {
+        return avatar ? (
+            <img
+                src={avatar}
+                alt={patient.name}
+                className="w-full h-full object-cover"
+            />
+        ) : (
+            <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                <span className="text-gray-500">No Image</span>
+            </div>
+        );
     };
 
     return (
         <div
             className="border border-gray-300 rounded-lg shadow-xl p-6 bg-white max-w-4xl mx-auto mb-6 flex flex-col justify-between transition-all duration-300"
-            style={{ minHeight: "300px", maxHeight: isExpanded ? "450px" : "300px" }}
+            style={{minHeight: "300px", maxHeight: isExpanded ? "450px" : "300px"}}
         >
             <div>
                 <div className="flex justify-between items-center">
@@ -37,12 +52,9 @@ export default function PatientCard({ patient, onUpdate }) {
                     </button>
                 </div>
                 <div className="flex items-start gap-6 mt-4">
-                    <div className="w-40 h-40 overflow-hidden border border-gray-300 rounded-md shadow-sm flex-shrink-0">
-                        <img
-                            src={patient.avatar}
-                            alt={patient.name}
-                            className="w-full h-full object-cover"
-                        />
+                    <div
+                        className="w-40 h-40 overflow-hidden border border-gray-300 rounded-md shadow-sm flex-shrink-0">
+                        {renderImage(patient.avatar)}
                     </div>
                     <div className="flex-1">
                         <a
@@ -81,8 +93,8 @@ export default function PatientCard({ patient, onUpdate }) {
             {isEditing && (
                 <EditPatientDialog
                     patient={patient}
-                    onClose={() => setIsEditing(false)}
-                    onSave={handleSave}
+                    onCloseAction={() => setIsEditing(false)}
+                    onSaveAction={handleSave}
                 />
             )}
         </div>
